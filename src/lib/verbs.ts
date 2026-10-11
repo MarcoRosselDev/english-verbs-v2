@@ -98,3 +98,8 @@ export async function deleteVerb(id: number): Promise<boolean> {
   const rows = await sql`DELETE FROM verbs WHERE id = ${id} RETURNING id`;
   return rows.length > 0; // false = no existía ese id
 }
+
+export async function countVerbsByCreator(userId: number): Promise<number> {
+  const rows = await sql`SELECT COUNT(*)::int AS total FROM verbs WHERE created_by = ${userId}`;
+  return rows[0].total;
+}

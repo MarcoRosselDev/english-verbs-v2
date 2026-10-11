@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { createVerb, listVerbs } from "@/lib/verbs";
+import {countVerbsByCreator, createVerb, listVerbs } from "@/lib/verbs";
 import { isUniqueViolation, jsonError, readJson, serverError, validationError } from "@/lib/http";
 import { verbInputSchema } from "@/types/verb";
+import { getCurrentUser } from "@/lib/auth";
+import { MAX_VERBS_PER_USER } from "@/lib/constants";
 
 /** Parámetros permitidos en la URL: /api/verbs?q=run&limit=20&offset=0
  *  Los de la URL siempre llegan como texto, por eso "coerce" los convierte a número.
@@ -25,6 +27,27 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  try {
+    // 401 = "no sé quién eres" (falta iniciar sesión)
+    const user = await getCurrentUser();
+    if (!user) return jsonError("Authentication required", 401);
+
+    const parsed = verbInputSchema.safeParse(await readJson(request));
+    if (!parsed.success) return validationError(parsed.error);
+
+    // Tope para usuarios normales (y para la cuenta demo compartida)
+    if (user.role !== "admin" && (await countVerbsByCreator(user.id)) >= MAX_VERBS_PER_USER) {
+      return jsonError(`You can create up to ${MAX_VERBS_PER_USER} verbs`, 403);
+    }
+
+    const verb = await createVerb(parsed.data, user.id); // ← ahora queda registrado quién lo creó
+    return Response.json(verb, { status: 201 });
+  } catch (error) {
+    if (isUniqueViolation(error)) return jsonError("That verb already exists", 409);
+    return serverError(error);
+  }
+}
+/* export async function POST(request: Request) {
   // TODO (parte 5): exigir sesión iniciada. Por ahora CUALQUIERA puede crear.
 
   const parsed = verbInputSchema.safeParse(await readJson(request));
@@ -37,4 +60,4 @@ export async function POST(request: Request) {
     if (isUniqueViolation(error)) return jsonError("That verb already exists", 409); // 409 = Conflict
     return serverError(error);
   }
-}
+} */

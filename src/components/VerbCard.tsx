@@ -2,6 +2,7 @@ import type { Verb } from "@/types/verb";
 
 type Props = {
   verb: Verb;
+  canModify: boolean; // ← nuevo
   onEdit: (verb: Verb) => void;
   onDelete: (verb: Verb) => void;
 };
@@ -27,7 +28,7 @@ const iconProps = {
   "aria-hidden": true,
 } as const;
 
-export function VerbCard({ verb, onEdit, onDelete }: Props) {
+export function VerbCard({ verb, canModify, onEdit, onDelete }: Props) {
   return (
     // "group" permite que los hijos reaccionen al hover/foco de la tarjeta completa
     <article className="group overflow-hidden rounded-lg border border-line bg-surface transition-colors hover:border-muted/50">
@@ -51,31 +52,33 @@ export function VerbCard({ verb, onEdit, onDelete }: Props) {
 
           {/* En pantallas grandes los botones aparecen al pasar el cursor o al enfocar
               con teclado (group-focus-within). En móvil siempre están visibles. */}
-          <div className="flex md:opacity-0 md:transition-opacity md:group-focus-within:opacity-100 md:group-hover:opacity-100">
-            <button
-              type="button"
-              onClick={() => onEdit(verb)}
-              aria-label={`Edit ${verb.infinitive}`}
-              className="rounded p-1.5 text-muted transition-colors hover:bg-canvas hover:text-ink"
-            >
-              <svg {...iconProps}>
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={() => onDelete(verb)}
-              aria-label={`Delete ${verb.infinitive}`}
-              className="rounded p-1.5 text-muted transition-colors hover:bg-canvas hover:text-danger"
-            >
-              <svg {...iconProps}>
-                <path d="M3 6h18" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
-            </button>
-          </div>
+          {canModify && (
+            <div className="flex md:opacity-0 md:transition-opacity md:group-focus-within:opacity-100 md:group-hover:opacity-100">
+              <button
+                type="button"
+                onClick={() => onEdit(verb)}
+                aria-label={`Edit ${verb.infinitive}`}
+                className="rounded p-1.5 text-muted transition-colors hover:bg-canvas hover:text-ink"
+              >
+                <svg {...iconProps}>
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => onDelete(verb)}
+                aria-label={`Delete ${verb.infinitive}`}
+                className="rounded p-1.5 text-muted transition-colors hover:bg-canvas hover:text-danger"
+              >
+                <svg {...iconProps}>
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 

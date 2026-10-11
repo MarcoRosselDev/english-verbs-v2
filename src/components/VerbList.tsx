@@ -1,16 +1,19 @@
 import type { Verb } from "@/types/verb";
 import { VerbCard } from "./VerbCard";
+import { canModifyVerb } from "@/lib/permissions";
+import type { PublicUser } from "@/types/user";
 
 type Props = {
   items: Verb[] | null; // null = todavía no llegó la primera respuesta
   loading: boolean;
   error: string | null;
   query: string;
+  user: PublicUser | null; // ← nuevo
   onEdit: (verb: Verb) => void;
   onDelete: (verb: Verb) => void;
 };
 
-export function VerbList({ items, loading, error, query, onEdit, onDelete }: Props) {
+export function VerbList({ items, loading, error, query, user, onEdit, onDelete }: Props) {
   if (error) {
     return (
       <div role="alert" className="rounded-lg border border-line bg-surface p-5">
@@ -48,7 +51,13 @@ export function VerbList({ items, loading, error, query, onEdit, onDelete }: Pro
       aria-busy={loading}
     >
       {items.map((verb) => (
-        <VerbCard key={verb.id} verb={verb} onEdit={onEdit} onDelete={onDelete} />
+        <VerbCard
+          key={verb.id}
+          verb={verb}
+          canModify={canModifyVerb(user, verb)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+      />
       ))}
     </div>
   );

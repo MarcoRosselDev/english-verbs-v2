@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import type { PublicUser } from "@/types/user";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { verbsApi } from "@/lib/api-client";
@@ -28,7 +30,7 @@ function dialogTitle(dialog: DialogState): string {
   return "New verb";
 }
 
-export function VerbBrowser() {
+export function VerbBrowser({ user }: { user: PublicUser | null }) {
   const [input, setInput] = useState("");
   const [offset, setOffset] = useState(0);
   const [version, setVersion] = useState(0); // sube +1 tras crear/editar/borrar para recargar
@@ -108,13 +110,22 @@ export function VerbBrowser() {
     <section>
       <div className="flex flex-col gap-3 sm:flex-row">
         <SearchBar value={input} onChange={handleSearch} />
-        <button
-          type="button"
-          onClick={() => setDialog({ type: "form", verb: null })}
-          className="rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
-        >
-          + New verb
-        </button>
+        {user ? (
+            <button
+              type="button"
+              onClick={() => setDialog({ type: "form", verb: null })}
+              className="rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
+            >
+              + New verb
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-md border border-line px-4 py-2.5 text-center text-sm text-muted transition-colors hover:border-muted hover:text-ink"
+            >
+              Log in to add verbs
+            </Link>
+          )}
       </div>
 
       <p className="mb-3 mt-5 font-mono text-xs text-muted">
@@ -126,6 +137,7 @@ export function VerbBrowser() {
         loading={loading}
         error={error}
         query={query}
+        user={user}
         onEdit={(verb) => setDialog({ type: "form", verb })}
         onDelete={(verb) => setDialog({ type: "delete", verb })}
       />

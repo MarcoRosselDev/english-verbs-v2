@@ -46,3 +46,13 @@ english-verbs-v2/
 └── package.json, tsconfig.json, next.config.ts   (generados por Next.js)
 
 ```
+
+codigo para general una clave secreta aleatoria:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+va a generar algo como alguna de estas dos ejemplos :
+QD3yPOi5rEXryscoS6K0WtpF/N9RyL9yLbMSoqw+nuI=
+QE1mjqIgOqWyZmX5Sr5x3CqBDXuhs/4ESECoTwwRafA=
+
+util para una clave segura para utilizar en una API web

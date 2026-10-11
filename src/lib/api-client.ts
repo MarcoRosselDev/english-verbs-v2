@@ -1,4 +1,5 @@
 import type { Verb, VerbInput, VerbListResponse } from "@/types/verb";
+import type { Credentials, PublicUser } from "@/types/user";
 
 type Issue = { field: string; message: string };
 
@@ -46,4 +47,16 @@ export const verbsApi = {
   update: (id: number, input: VerbInput) =>
     request<Verb>(`/api/verbs/${id}`, { method: "PUT", body: JSON.stringify(input) }),
   remove: (id: number) => request<void>(`/api/verbs/${id}`, { method: "DELETE" }),
+};
+
+export const authApi = {
+  register: (credentials: Credentials) =>
+    request<PublicUser>("/api/auth/register", { method: "POST", body: JSON.stringify(credentials) }),
+
+  login: (credentials: Credentials) =>
+    request<PublicUser>("/api/auth/login", { method: "POST", body: JSON.stringify(credentials) }),
+  
+  demo: () => request<PublicUser>("/api/auth/demo", { method: "POST" }),
+  
+  logout: () => request<void>("/api/auth/logout", { method: "POST" }),
 };
