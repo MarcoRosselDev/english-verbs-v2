@@ -9,7 +9,7 @@ import type { Verb, VerbInput, VerbListResponse } from "@/types/verb";
 import { DeleteConfirm } from "./DeleteConfirm";
 import { Modal } from "./Modal";
 import { SearchBar } from "./SearchBar";
-import { VerbForm } from "./verbForm.tsx";
+import { VerbForm } from "./verbForm";
 import { VerbList } from "./VerbList";
 
 const LIMIT = 10;
